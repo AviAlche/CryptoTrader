@@ -67,8 +67,6 @@ class Bit2cFetcher:
     def getTicker(self, Pair=_relevantPairs["BTN_NIS"]):
         ret = urllib.request.urlopen(urllib.request.Request(self._Url + self._EXCHANGES +"/"+ str(Pair) + "/Ticker.json"))
         return json.loads(ret.read())
-        # _json = json.loads(response.decode("utf-8"))
-        # return Ticker(_json['h'], _json['l'], _json['ll'], _json['a'], _json['av'])
 
     def getTickers(self):
         ticker={}
