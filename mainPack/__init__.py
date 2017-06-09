@@ -8,6 +8,7 @@ from network.fetchers.PoloniexFetcher import PoloniexFetcher
 from network.fetchers.OKCoinClient import OKCoinClient
 from network.parsers.Bit2cParser import Bit2cParser
 from network.parsers.BitfinexParser import BitfinexParser
+from network.parsers.OKCoinParser import OKCoinParser
 from network.parsers.PoloniexParser import PoloniexParser
 
 
@@ -30,7 +31,13 @@ def main():
     bitfinexData = bitfinexParser.parseTickers(bitfinexClient.getTickers())
     print("###############################################")
 
-    # xbtce = OKCoinClient()
+    okcoinClient = OKCoinClient()
+    okcoinParser = OKCoinParser()
+    # okcoinClient.ticker("btc_usd");
+    okcoinData = okcoinParser.parseTickers(okcoinClient.getTickers())
+    print("###############################################")
+
+
     # print(xbtce.ticker("ltc_usd"))
     # exClient = ExtendClient()
     # print("bla")

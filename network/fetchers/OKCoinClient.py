@@ -1,9 +1,12 @@
 import requests
 import hashlib
 import simplejson
+from network.fetchers.Client import Client
 
-class OKCoinClient(object):
-    def __init__(self):
+class OKCoinClient(Client):
+
+    def __init__(self , APIKey = None, Secret = None):
+        Client.__init__(self, APIKey, Secret)
         self.http = requests.Session()
 
     def get_json(self, url, params):
@@ -11,13 +14,23 @@ class OKCoinClient(object):
         data = simplejson.loads(r.content)
         return (data)
 
-    def ticker(self, symbol):
+    def getTicker(self, symbol):
         params = {'symbol': symbol}
         ticker_url = 'https://www.okcoin.com/api/ticker.do'
         if symbol == 'btc_usd' or symbol == 'ltc_usd':
             params['ok'] = 1
-        data = self.get_json(ticker_url, params)
-        return (xBTCeTickerObject(data))
+        return self.get_json(ticker_url, params)
+
+
+    def getTickers(self):
+        tickersData={}
+        for symbol in self.getSymbols():
+            tickersData[symbol] = self.getTicker(symbol)
+        return tickersData
+
+    def getSymbols(self):
+        return ['btc_usd', 'ltc_usd']
+
 
     def get_depth(self, symbol):
         params = {'symbol': symbol}
@@ -40,13 +53,6 @@ class OKCoinClient(object):
         url = 'https://www.okcoin.com/api/future_ticker.do'
         return self.get_json(url, params)
 
-
-class OKCoinClientTradeAPI(OKCoinClient):
-    def __init__(self, partner, secret):
-        OKCoinClient.__init__(self)
-        self.partner = partner
-        self.secret = secret
-
         # partner is integer, secret is string
 
     def _post(self, params, url):
@@ -60,7 +66,7 @@ class OKCoinClientTradeAPI(OKCoinClient):
             if (pos != len(params) - 1):
                 sign_string += '&'
 
-        sign_string += self.secret
+        sign_string += self.Secret
         m = hashlib.md5()
         m.update(sign_string)
         signed = m.hexdigest().upper()
@@ -84,7 +90,7 @@ class OKCoinClientTradeAPI(OKCoinClient):
         return (self._post(params, user_info_url))
 
     def trade(self, symbol, trade_type, rate, amount):
-        params = {'partner': self.partner,
+        params = {'partner': self.APIKey,
                   'symbol': symbol,
                   'type': trade_type,
                   'rate': rate,
@@ -93,14 +99,14 @@ class OKCoinClientTradeAPI(OKCoinClient):
         return (self._post(params, trade_url))
 
     def cancel_order(self, order_id, symbol):
-        params = {'partner': self.partner,
+        params = {'partner': self.APIKey,
                   'order_id': order_id,
                   'symbol': symbol}
         cancel_order_url = 'https://www.okcoin.com/api/cancelorder.do'
         return (self._post(params, cancel_order_url))
 
     def get_order(self, order_id, symbol):
-        params = {'partner': self.partner,
+        params = {'partner': self.APIKey,
                   'order_id': order_id,
                   'symbol': symbol}
         get_order_url = 'https://www.okcoin.com/api/getorder.do'
@@ -124,18 +130,18 @@ class OKCoinClientTradeAPI(OKCoinClient):
         return (codes[error_code])
 
     def get_future_info(self):
-        params = {'partner': self.partner}
+        params = {'partner': self.APIKey}
         user_info_url = 'https://www.okcoin.com/api/future_userinfo.do'
         return (self._post(params, user_info_url))
 
     def get_future_holdings(self, symbol):
-        params = {'partner': self.partner,
+        params = {'partner': self.APIKey,
                   'symbol': symbol}
         holdings_url = 'https://www.okcoin.com/api/future_position.do'
         return (self._post(params, holdings_url))
 
     def future_trade(self, symbol, contract, price, amount, type):
-        params = {'partner': self.partner,
+        params = {'partner': self.APIKey,
                   'symbol': symbol,
                   'contractType': contract,
                   'price': price,
