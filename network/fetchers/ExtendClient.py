@@ -8,3 +8,6 @@ class ExtendClient(Client):
     def getTickers(self):
         pass
 
+    def getTicker(self,symbol = None):
+        pass
+

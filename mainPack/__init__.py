@@ -2,20 +2,26 @@ from network.fetchers.Bit2cClient import Bit2cClient
 from network.fetchers.Bit2cFetcher import Bit2cFetcher
 from network.fetchers.BitfinexClient import BitfinexClient
 from network.fetchers.BitfinexFetcher import BitfinexFetcher
+from network.fetchers.BithumbClient import BithumbClient
 from network.fetchers.ExtendClient import ExtendClient
 from network.fetchers.PoloniexClient import PoloniexClient
 from network.fetchers.PoloniexFetcher import PoloniexFetcher
 from network.fetchers.OKCoinClient import OKCoinClient
+from network.fetchers.YunbiClient import YunbiClient
 from network.parsers.Bit2cParser import Bit2cParser
 from network.parsers.BitfinexParser import BitfinexParser
+from network.parsers.BithumbParser import BithumbParser
 from network.parsers.OKCoinParser import OKCoinParser
 from network.parsers.PoloniexParser import PoloniexParser
+from network.parsers.YunbiParser import YunbiParser
+from network.utils.FiatCurrencyAPI import FiatCurrencyAPI
 
 
 def main():
 
-    print("All exchanges tickers:")
 
+    print("All exchanges tickers:")
+    #
     polClient = PoloniexClient()
     polParser = PoloniexParser()
     polData = polParser.parseTickers(polClient.getTickers())
@@ -33,22 +39,22 @@ def main():
 
     okcoinClient = OKCoinClient()
     okcoinParser = OKCoinParser()
-    # okcoinClient.ticker("btc_usd");
     okcoinData = okcoinParser.parseTickers(okcoinClient.getTickers())
     print("###############################################")
 
+    yunbiClient = YunbiClient()
+    yunbiParser = YunbiParser()
+    yunbiData = yunbiParser.parseTickers(yunbiClient.getTickers())
+    print("###############################################")
 
-    # print(xbtce.ticker("ltc_usd"))
-    # exClient = ExtendClient()
-    # print("bla")
-    # polo = PoloniexFetcher()
-    # polo_data = polo.getTickers()
-    # print(polo_data)
-    # bitfinex = BitfinexFetcher()
-    # bitfinex_data = bitfinex.getTickers()
-    # print(bitfinex_data)
-    # bit2c = Bit2cFetcher()
-    # bit2c_data = bit2c.getTickers()
-    # print(bit2c_data)
+    bithumbClient = BithumbClient()
+    bithumbParser = BithumbParser()
+    bithumbData = bithumbParser.parseTickers(bithumbClient.getTickers())
+    print("###############################################")
+
+
+    # currencyAPI = FiatCurrencyAPI()
+    # x = currencyAPI.getCurrencies()
+
 
 main()

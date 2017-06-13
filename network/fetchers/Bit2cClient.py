@@ -8,23 +8,30 @@ from network.fetchers.Client import Client
 
 class Bit2cClient(Client):
 
-    _Url = "https://bit2c.co.il"
+    _baseUrl = "https://bit2c.co.il"
     _EXCHANGES = "/Exchanges"
     _ORDERS = "/Order"
-    _relevantPairs = {"BTN_NIS": 0,
-                      "LTC_BTC": 1,
-                      "LTC_NIS": 2}
+    _symbols = {"BTN_NIS": 0,
+               "LTC_BTC": 1,
+               "LTC_NIS": 2}
 
-    def __init__(self,APIKey = None, Secret = None):
-        Client.__init__(self,APIKey, Secret)
-        self.nonce = int(time.time())
+    def getTicker(self, Pair=_symbols["BTN_NIS"]):
+        ret = urllib.request.urlopen(
+            urllib.request.Request(self._baseUrl + self._EXCHANGES + "/" + str(Pair) + "/Ticker.json"))
+        return json.loads(ret.read())
 
+
+    def getTickers(self):
+        ticker = {}
+        for pairName, pairNum in self._symbols.items():
+            ticker[pairName] = self.getTicker(pairNum)
+        return ticker
 
 
     def query(self, command, req={}):
 
         if (command == self._EXCHANGES):
-            ret = urllib.request.urlopen(urllib.request.Request(self._Url + self._EXCHANGES))
+            ret = urllib.request.urlopen(urllib.request.Request(self._baseUrl + self._EXCHANGES))
             return json.loads(ret.read())
         elif (command == "returnOrderBook"):
             ret = urllib.request.urlopen(urllib.request.Request(
@@ -68,15 +75,5 @@ class Bit2cClient(Client):
     #         # ExchangesTrades.append(exTrade)
     #     return ExchangesTrades
 
-    def getTicker(self, Pair=_relevantPairs["BTN_NIS"]):
-        ret = urllib.request.urlopen(
-            urllib.request.Request(self._Url + self._EXCHANGES + "/" + str(Pair) + "/Ticker.json"))
-        return json.loads(ret.read())
 
-
-    def getTickers(self):
-        ticker = {}
-        for pairName, pairNum in self._relevantPairs.items():
-            ticker[pairName] = self.getTicker(pairNum)
-        return ticker
 
